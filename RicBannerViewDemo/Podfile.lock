@@ -1,0 +1,22 @@
+PODS:
+  - RicBannerView (1.0.2):
+    - SDWebImage (~> 3.8)
+  - SDWebImage (3.8.2):
+    - SDWebImage/Core (= 3.8.2)
+  - SDWebImage/Core (3.8.2)
+
+DEPENDENCIES:
+  - RicBannerView (from `..`)
+  - SDWebImage
+
+EXTERNAL SOURCES:
+  RicBannerView:
+    :path: ..
+
+SPEC CHECKSUMS:
+  RicBannerView: 4c2661aefb50000aa57586c60c376876b3844dca
+  SDWebImage: 098e97e6176540799c27e804c96653ee0833d13c
+
+PODFILE CHECKSUM: 50ffe8a4dfb5be1c825eed2fb5b7022a8702e2bc
+
+COCOAPODS: 1.2.0.beta.1
