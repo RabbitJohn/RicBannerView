@@ -35,21 +35,42 @@
 	    [self.view addSubview:self.scrollView];    
 	    // Do any additional setup after loading the view, typically from a nib.
 	}
+	- (UIView *)customBannerViewForBanner:(id<RicBannerItem>)bannerItem atIndex:(NSUInteger)idx bannerView:(RicBannerView *)bannerView{
+    if (idx == 2){
+        UIView *customView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, bannerView.frame.size.height)];
+        UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(0, 20, 60, 30)];
+        btn.backgroundColor = [UIColor yellowColor];
+        [btn setTitle:@"click here for alert" forState:UIControlStateNormal];
+        [btn addTarget:self action:@selector(clickHere) forControlEvents:UIControlEventTouchUpInside];
+        [customView addSubview:btn];
+        return customView;
+    }else{
+        return nil;
+     }
+	}
 	-(void)didClickBanner:(RicBannerItem *)bannerItem atIndex:(NSUInteger)idx bannerView:(RicBannerView *)bannerView
 	{
 	NSLog(@"click banner to link url %@ at index:%ld\n",bannerItem.bannerLinkUrl,idx);
 	}
-	-(void)viewWillAppear:(BOOL)animated{
-	    [super viewWillAppear:animated];
-	    // start the timer for playing
-	    [self.bannerView beginPlay];
+	- (void)clickHere{
+	//    [self.bannerView pausePaly];
+	    [[[UIAlertView alloc] initWithTitle:nil message:@"this is a notice" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
 	}
-	-(void)viewWillDisappear:(BOOL)animated{
-	    [super viewWillDisappear:animated];
-	    // stop the timer for auto scrolling.
-	    [self.bannerView stopPaly];
+	- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+	    // do nothing here.
+	//    [self.bannerView resumePlay];
 	}
-	@end
+		-(void)viewWillAppear:(BOOL)animated{
+		    [super viewWillAppear:animated];
+		    // start the timer for playing
+		    [self.bannerView beginPlay];
+		}
+		-(void)viewWillDisappear:(BOOL)animated{
+		    [super viewWillDisappear:animated];
+		    // stop the timer for auto scrolling.
+		    [self.bannerView stopPaly];
+		}
+		@end
 
 ###Integration:
 
