@@ -15,8 +15,25 @@
 
 @optional
 
+/**
+ operations when click the banner.
+
+ @param bannerItem the banner item value
+ @param idx the index of the item value in the bannerItems.
+ @param bannerView the banner view.
+ */
 - (void)didClickBanner:(id<RicBannerItem>)bannerItem atIndex:(NSUInteger)idx bannerView:(RicBannerView *)bannerView;
 
+/**
+ customize the banner item view yourself.
+ note: the result that you have return should be cached to reduce the alloc operation.
+ @param bannerItem: the data that your have implemte the RicBannerItem protocol
+ @param idx :the index of the banner item in the array named bannerItems
+ @param bannerView: the collection view as the root container
+ @return the banner item view that you defined
+ 
+ */
+- (UIView *)customBannerViewForBanner:(id<RicBannerItem>)bannerItem atIndex:(NSUInteger)idx bannerView:(RicBannerView *)bannerView;
 @end
 
 /**
@@ -27,6 +44,7 @@
   the banner infos will show in the banner view.
  */
 @property (nonatomic, strong) NSArray <id<RicBannerItem>> *bannerItems;
+@property (nonatomic, strong) UIImage *bannerPlaceholderImage;
 /**
  the banner dispaly interval default is 3
  */
@@ -51,15 +69,26 @@
  the normal color of the page indicator
  */
 @property (nonatomic, strong) UIColor *normalIndicatorColor;
+/// when you have something other do and will leave/enter the sight of the banner view invoke the methods below to start/stop playing the banner.
+/**
+  begin to auto scrolling by the timer
+ */
+- (void)startPlay;
 
 /**
-  begin play play for auto scrolling
+ resume the banner auto scroll
  */
-- (void)beginPlay;
+- (void)resumePlay;
 /**
-  top play to stop the timer
+  stop playing and stop the timer and set the timer to nil.
  */
-- (void)stopPaly;
+- (void)pausePaly;
+
+/**
+ quit display and set the timer to nil
+ */
+- (void)quitPlay;
+
 
 @end
 
@@ -68,11 +97,15 @@
  */
 @protocol RicBannerItem <NSObject>
 @required
+/**
+ url for the banner image that will be show.
+ */
 @property (nonatomic, strong) NSString *bannerImageUrl;
-@property (nonatomic, strong) UIImage *bannerPlaceholderImage;
 
 @optional
+/**
+ the banner link url
+ */
 @property (nonatomic, strong) NSString *bannerLinkUrl;
-@property (nonatomic, strong) UIImage *bannerImage;
 
 @end

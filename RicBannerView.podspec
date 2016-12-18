@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
 
   s.name         = "RicBannerView"
   s.version      = "0.0.1"
-  s.summary      = "a simple implantation of a banner play view."
+  s.summary      = "A simple implantation of a banner play view."
 
   # This description is used to generate tags and improve search results.
   #   * Think: What does it do? Why did you write it? What is the focus?
@@ -25,12 +25,11 @@ Pod::Spec.new do |s|
   #   * Write the description between the DESC delimiters below.
   #   * Finally, don't worry about the indent, CocoaPods strips it!
   s.description  = <<-DESC
-  this is a sample banner view realization that has two main job
-  1、display the banners scheduled by the timer.
-  2、cycled displaying
+	  1、display the banners scheduled by the timer.
+	  2、cycled displaying
                    DESC
 
-  s.homepage     = "https://home.cnblogs.com/u/codetime/"
+  s.homepage     = "https://github.com/zLihuan/RicBannerView"
   # s.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
 
 
@@ -42,7 +41,7 @@ Pod::Spec.new do |s|
   #
 
   #s.license      = "MIT (example)"
-   s.license      = { :type => "MIT", :file => "LICENSE" }
+   s.license      = { :type => "MIT", :file => "FILE_LICENSE" }
 
 
   # ――― Author Metadata  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -58,7 +57,7 @@ Pod::Spec.new do |s|
   s.author             = { "rice" => "625482408@qq.com" }
   # Or just: s.author    = "rice"
   # s.authors            = { "rice" => "625482408@qq.com" }
-  # s.social_media_url   = "http://twitter.com/zhanglihuan"
+  # s.social_media_url   = "http://twitter.com/.."
 
   # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
@@ -66,7 +65,7 @@ Pod::Spec.new do |s|
   #  the deployment target. You can optionally include the target after the platform.
   #
 
-   s.platform     = :ios
+  # s.platform     = :ios
    s.platform     = :ios, "7.0"
 
   #  When using multiple platforms
@@ -136,6 +135,5 @@ Pod::Spec.new do |s|
 
   # s.xcconfig = { "HEADER_SEARCH_PATHS" => "$(SDKROOT)/usr/include/libxml2" }
   # s.dependency "JSONKit", "~> 1.4"
-  s.dependency "SDWebImage","~> 3.8"
-
+	s.dependency "SDWebImage"
 end

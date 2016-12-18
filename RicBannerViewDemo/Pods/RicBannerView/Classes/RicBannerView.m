@@ -2,7 +2,7 @@
 //  RicBannerView.m
 //  RicBannerView
 //
-//  Created by 张礼焕 on 2016/12/13.
+//  Created by rice on 2016/12/13.
 //  Copyright © 2016年 rice. All rights reserved.
 //
 
@@ -48,7 +48,7 @@
 @interface RicBannerPlayItemView : UICollectionViewCell
 
 @property (nonatomic, strong) UIImageView *imageView;
-
+@property (nonatomic, strong) UIView *customerView;
 @end
 
 @implementation RicBannerPlayItemView
@@ -58,11 +58,23 @@
     if(self){
         self.backgroundColor = [UIColor whiteColor];
         self.imageView = [[UIImageView alloc] initWithFrame:self.bounds];
-        [self addSubview:self.imageView];
+        [self.contentView addSubview:self.imageView];
     }
     return self;
 }
 
+- (void)setCustomerView:(UIView *)customerView{
+    if(_customerView){
+        [_customerView removeFromSuperview];
+    }
+    if(!customerView){
+        self.imageView.hidden = NO;
+    }else{
+        self.imageView.hidden = YES;
+        [self.contentView addSubview:customerView];
+    }
+    _customerView = customerView;
+}
 
 @end
 
@@ -76,6 +88,7 @@
 @property (nonatomic, assign) NSUInteger currentPlayIndex;
 @property (nonatomic, strong) RicPageControl *pageControl;
 @property (nonatomic, strong) NSArray <id<RicBannerItem>>*originItems;
+@property (nonatomic, strong) NSString *reusedCustomId;
 @end
 
 
@@ -99,7 +112,6 @@
         self.bannerPlayView.showsHorizontalScrollIndicator = false;
         [self.bannerPlayView registerClass:[RicBannerPlayItemView class] forCellWithReuseIdentifier:@"RicBannerPlayItemView"];
         [self addSubview:self.bannerPlayView];
-        
     }
     
     return self;
@@ -152,7 +164,7 @@
     self.pageControl.hidden = !shouldIndicator;
 }
 
-- (void)beginPlay
+- (void)startPlay
 {
     NSAssert(_bannerItems.count > 1, @"out of bannerlist range");
 
@@ -164,7 +176,15 @@
         [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
 }
 
-- (void)stopPaly{
+- (void)pausePaly{
+    [NSObject cancelPreviousPerformRequestsWithTarget:self.timer];
+    self.timer.fireDate = [NSDate distantFuture];
+}
+- (void)resumePlay{
+    self.timer.fireDate = [NSDate dateWithTimeIntervalSinceNow:self.bannerDisplayDuration];
+}
+- (void)quitPlay{
+    [NSObject cancelPreviousPerformRequestsWithTarget:self.timer];
     if(self.timer && self.timer.isValid){
         [self.timer invalidate];
     }
@@ -172,12 +192,11 @@
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
-    [NSObject cancelPreviousPerformRequestsWithTarget:self.timer];
-    self.timer.fireDate = [NSDate distantFuture];
+    [self pausePaly];
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
-     self.timer.fireDate = [NSDate dateWithTimeIntervalSinceNow:self.bannerDisplayDuration];
+    [self resumePlay];
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
@@ -198,24 +217,32 @@
     
     RicBannerPlayItemView *bannerPlayItemView = (RicBannerPlayItemView *)[self.bannerPlayView dequeueReusableCellWithReuseIdentifier:@"RicBannerPlayItemView" forIndexPath:indexPath];
     id<RicBannerItem> bannerInfo = self.bannerItems[indexPath.item];
-    if(bannerInfo.bannerImageUrl.length > 0){
-        [bannerPlayItemView.imageView sd_setImageWithURL:[NSURL URLWithString:bannerInfo.bannerImageUrl]];
-    }else if(bannerInfo.bannerImage != nil){
-        bannerPlayItemView.imageView.image = bannerInfo.bannerImage;
-    }else{
-        bannerPlayItemView.imageView.image = bannerInfo.bannerPlaceholderImage;
+    
+    UIView *customBannerView = nil;
+    if (self.delegate != nil && [self.delegate conformsToProtocol:@protocol(RicBannerViewDelegate)] && [self.delegate respondsToSelector:@selector(customBannerViewForBanner:atIndex:bannerView:)]){
+       
+        customBannerView = [self.delegate customBannerViewForBanner:bannerInfo atIndex:[self.originItems indexOfObject:bannerInfo] bannerView:self];
     }
     
+    bannerPlayItemView.customerView = customBannerView;
+    if(!customBannerView){
+        if(bannerInfo.bannerImageUrl.length > 0){
+            [bannerPlayItemView.imageView sd_setImageWithURL:[NSURL URLWithString:bannerInfo.bannerImageUrl] placeholderImage:self.bannerPlaceholderImage];
+        }
+    }
+
     return bannerPlayItemView;
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
-    
+    [self pausePaly];
     if(self.delegate && [self.delegate conformsToProtocol:@protocol(RicBannerViewDelegate)]&& [self.delegate respondsToSelector:@selector(didClickBanner:atIndex:bannerView:)]){
         id<RicBannerItem>item = self.bannerItems[indexPath.item];
         [self.delegate didClickBanner:item atIndex:[self.originItems indexOfObject:item] bannerView:self];
     }
+    [self resumePlay];
 }
+
 
 - (void)displayNextBanner
 {
@@ -254,20 +281,6 @@
 - (void)updateIndicator{
     self.pageControl.currentPage = self.currentPlayIndex;
 }
-
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
-    [NSObject cancelPreviousPerformRequestsWithTarget:self.timer];
-    self.timer.fireDate = [NSDate dateWithTimeIntervalSinceNow:self.bannerDisplayDuration];
-}
-
-- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
-    self.timer.fireDate = [NSDate dateWithTimeIntervalSinceNow:self.bannerDisplayDuration];
-}
-
-- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
-    self.timer.fireDate = [NSDate dateWithTimeIntervalSinceNow:self.bannerDisplayDuration];
-}
-
 
 /*
 // Only override drawRect: if you perform custom drawing.

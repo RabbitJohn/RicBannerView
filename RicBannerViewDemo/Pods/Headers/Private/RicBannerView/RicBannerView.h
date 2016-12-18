@@ -1,1 +1,1 @@
-../../../../../Classes/RicBannerView.h
+../../../RicBannerView/Classes/RicBannerView.h

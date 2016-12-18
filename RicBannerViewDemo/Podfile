@@ -4,8 +4,8 @@
 target 'RicBannerViewDemo' do
   # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
   # use_frameworks!
- pod 'RicBannerView',:path => '..'
-#pod 'RicBannerView'
+  #pod 'RicBannerView',:path => '..'
+pod 'RicBannerView’,’~>0.0.1’
 pod 'SDWebImage'
   # Pods for RicBannerViewDemo
 
